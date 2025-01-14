@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,8 +21,6 @@ const staggerContainer = {
 };
 
 export default function IndexPage() {
-  const navigate = useNavigate();
-
   return (
     <div className="container mx-auto px-4 py-16 space-y-32">
       {/* Order Section */}
@@ -43,7 +40,8 @@ export default function IndexPage() {
           </div>
           <div>
             <Label htmlFor="customer">Cliente</Label>
-            <Select placeholder="Seleccione un cliente">
+            <Select>
+              <option value="" disabled selected>Seleccione un cliente</option>
               {/* Options should be populated dynamically */}
               <option value="cliente1">Cliente 1</option>
               <option value="cliente2">Cliente 2</option>
