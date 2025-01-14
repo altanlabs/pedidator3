@@ -37,7 +37,7 @@ export default function IndexPage() {
     setItems([...items, { reference: "", description: "", quantity: 0, discount: 0 }]);
   };
 
-  const saveOrder = () => {
+  const handleSaveOrder = () => {
     const newOrder: Order = { orderNumber, customer, items };
     setOrders([...orders, newOrder]);
     // Reset form
