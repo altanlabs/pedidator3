@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState, ChangeEvent } from "react";
+import { saveAs } from "file-saver";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,20 +21,32 @@ const staggerContainer = {
   },
 };
 
+interface Order {
+  orderNumber: string;
+  customer: string;
+  items: Array<{
+    reference: string;
+    description: string;
+    quantity: number;
+    discount: number;
+  }>;
+}
+
 export default function IndexPage() {
   const [orderNumber, setOrderNumber] = useState("");
   const [customer, setCustomer] = useState("");
   const [items, setItems] = useState([
     { reference: "", description: "", quantity: 0, discount: 0 },
   ]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const addItem = () => {
     setItems([...items, { reference: "", description: "", quantity: 0, discount: 0 }]);
   };
 
   const handleSaveOrder = () => {
-    // Logic to save the order
-    console.log("Order saved", { orderNumber, customer, items });
+    const newOrder: Order = { orderNumber, customer, items };
+    setOrders([...orders, newOrder]);
     // Reset form
     setOrderNumber("");
     setCustomer("");
@@ -42,6 +55,27 @@ export default function IndexPage() {
 
   const handleCustomerChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setCustomer(e.target.value);
+  };
+
+  const exportToCSV = () => {
+    const csvContent = [
+      ["Número de Pedido", "Cliente", "Referencia", "Descripción", "Cantidad", "Descuento Especial"],
+      ...orders.flatMap(order =>
+        order.items.map(item => [
+          order.orderNumber,
+          order.customer,
+          item.reference,
+          item.description,
+          item.quantity,
+          item.discount,
+        ])
+      ),
+    ]
+      .map(e => e.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "orders.csv");
   };
 
   return (
@@ -163,18 +197,45 @@ export default function IndexPage() {
         </Button>
       </motion.section>
 
-      {/* CTA Section */}
+      {/* Saved Orders Section */}
       <motion.section
         initial="initial"
         whileInView="animate"
         viewport={{ once: true }}
-        className="text-center space-y-6"
+        className="space-y-8"
       >
-        <motion.div variants={fadeInUp}>
-          <Button size="lg" variant="default" onClick={handleSaveOrder}>
-            Guardar Pedido
-          </Button>
-        </motion.div>
+        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+          Pedidos Guardados
+        </h2>
+        <Table>
+          <thead>
+            <tr>
+              <th>Número de Pedido</th>
+              <th>Cliente</th>
+              <th>Referencia</th>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Descuento Especial</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.flatMap((order, orderIndex) =>
+              order.items.map((item, itemIndex) => (
+                <tr key={`${orderIndex}-${itemIndex}`}>
+                  <td>{order.orderNumber}</td>
+                  <td>{order.customer}</td>
+                  <td>{item.reference}</td>
+                  <td>{item.description}</td>
+                  <td>{item.quantity}</td>
+                  <td>{item.discount}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
+        <Button onClick={exportToCSV} variant="default">
+          Exportar a CSV
+        </Button>
       </motion.section>
     </div>
   );
