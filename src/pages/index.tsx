@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,25 @@ const staggerContainer = {
 };
 
 export default function IndexPage() {
+  const [orderNumber, setOrderNumber] = useState("");
+  const [customer, setCustomer] = useState("");
+  const [items, setItems] = useState([
+    { reference: "", description: "", quantity: 0, discount: 0 },
+  ]);
+
+  const addItem = () => {
+    setItems([...items, { reference: "", description: "", quantity: 0, discount: 0 }]);
+  };
+
+  const handleSaveOrder = () => {
+    // Logic to save the order
+    console.log("Order saved", { orderNumber, customer, items });
+    // Reset form
+    setOrderNumber("");
+    setCustomer("");
+    setItems([{ reference: "", description: "", quantity: 0, discount: 0 }]);
+  };
+
   return (
     <div className="container mx-auto px-4 py-16 space-y-32">
       {/* Order Section */}
@@ -36,12 +56,19 @@ export default function IndexPage() {
         <div className="space-y-4">
           <div>
             <Label htmlFor="order-number">Número de Pedido</Label>
-            <Input id="order-number" placeholder="Ingrese el número de pedido" />
+            <Input
+              id="order-number"
+              placeholder="Ingrese el número de pedido"
+              value={orderNumber}
+              onChange={(e) => setOrderNumber(e.target.value)}
+            />
           </div>
           <div>
             <Label htmlFor="customer">Cliente</Label>
-            <Select>
-              <option value="" disabled selected>Seleccione un cliente</option>
+            <Select value={customer} onChange={(e) => setCustomer(e.target.value)}>
+              <option value="" disabled selected>
+                Seleccione un cliente
+              </option>
               {/* Options should be populated dynamically */}
               <option value="cliente1">Cliente 1</option>
               <option value="cliente2">Cliente 2</option>
@@ -71,15 +98,61 @@ export default function IndexPage() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><Input placeholder="Referencia" /></td>
-              <td><Input placeholder="Descripción" /></td>
-              <td><Input type="number" placeholder="Cantidad" /></td>
-              <td><Input type="number" placeholder="Descuento" /></td>
-            </tr>
-            {/* Additional rows can be added dynamically */}
+            {items.map((item, index) => (
+              <tr key={index}>
+                <td>
+                  <Input
+                    placeholder="Referencia"
+                    value={item.reference}
+                    onChange={(e) => {
+                      const newItems = [...items];
+                      newItems[index].reference = e.target.value;
+                      setItems(newItems);
+                    }}
+                  />
+                </td>
+                <td>
+                  <Input
+                    placeholder="Descripción"
+                    value={item.description}
+                    onChange={(e) => {
+                      const newItems = [...items];
+                      newItems[index].description = e.target.value;
+                      setItems(newItems);
+                    }}
+                  />
+                </td>
+                <td>
+                  <Input
+                    type="number"
+                    placeholder="Cantidad"
+                    value={item.quantity}
+                    onChange={(e) => {
+                      const newItems = [...items];
+                      newItems[index].quantity = parseInt(e.target.value);
+                      setItems(newItems);
+                    }}
+                  />
+                </td>
+                <td>
+                  <Input
+                    type="number"
+                    placeholder="Descuento"
+                    value={item.discount}
+                    onChange={(e) => {
+                      const newItems = [...items];
+                      newItems[index].discount = parseFloat(e.target.value);
+                      setItems(newItems);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </Table>
+        <Button onClick={addItem} variant="outline">
+          Añadir Artículo
+        </Button>
       </motion.section>
 
       {/* CTA Section */}
@@ -90,7 +163,7 @@ export default function IndexPage() {
         className="text-center space-y-6"
       >
         <motion.div variants={fadeInUp}>
-          <Button size="lg" variant="default">
+          <Button size="lg" variant="default" onClick={handleSaveOrder}>
             Guardar Pedido
           </Button>
         </motion.div>
