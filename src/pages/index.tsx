@@ -237,6 +237,20 @@ export default function IndexPage() {
           Exportar a CSV
         </Button>
       </motion.section>
+
+      {/* Save Order Button */}
+      <motion.section
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true }}
+        className="text-center space-y-6"
+      >
+        <motion.div variants={staggerContainer}>
+          <Button size="lg" variant="default" onClick={handleSaveOrder}>
+            Guardar Pedido
+          </Button>
+        </motion.div>
+      </motion.section>
     </div>
   );
 }
