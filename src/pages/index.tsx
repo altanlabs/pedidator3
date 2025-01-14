@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,10 @@ export default function IndexPage() {
     setItems([{ reference: "", description: "", quantity: 0, discount: 0 }]);
   };
 
+  const handleCustomerChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setCustomer(e.target.value);
+  };
+
   return (
     <div className="container mx-auto px-4 py-16 space-y-32">
       {/* Order Section */}
@@ -65,14 +69,19 @@ export default function IndexPage() {
           </div>
           <div>
             <Label htmlFor="customer">Cliente</Label>
-            <Select value={customer} onChange={(e) => setCustomer(e.target.value)}>
+            <select
+              id="customer"
+              value={customer}
+              onChange={handleCustomerChange}
+              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            >
               <option value="" disabled selected>
                 Seleccione un cliente
               </option>
               {/* Options should be populated dynamically */}
               <option value="cliente1">Cliente 1</option>
               <option value="cliente2">Cliente 2</option>
-            </Select>
+            </select>
           </div>
         </div>
       </motion.section>
